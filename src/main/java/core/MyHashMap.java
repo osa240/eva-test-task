@@ -71,7 +71,7 @@ public class MyHashMap<K extends Long, V> implements Map<Long, V> {
 
     @Override
     public V get(Object key) {
-        Node<Long, V> temporaryNode = table[index((Long) key)];
+        Node<Long, V> temporaryNode = table[getIndex((Long) key)];
         while (temporaryNode != null) {
             if (Objects.equals(key, temporaryNode.key)) {
                 return temporaryNode.value;
@@ -84,7 +84,7 @@ public class MyHashMap<K extends Long, V> implements Map<Long, V> {
     @Override
     public V put(Long key, V value) {
         resize();
-        Node<Long, V> node = table[index(key)];
+        Node<Long, V> node = table[getIndex(key)];
         while (node != null) {
             if (Objects.equals(key, node.key)) {
                 node.value = value;
@@ -97,21 +97,30 @@ public class MyHashMap<K extends Long, V> implements Map<Long, V> {
             }
             node = node.next;
         }
-        table[index(key)] = new Node<>(key, value, null);
+        table[getIndex(key)] = new Node<>(key, value, null);
         size++;
         return value;
     }
 
     @Override
     public V remove(Object key) {
-        Node<Long, V> temporaryNode = table[index((Long) key)];
+        int indexOfRemoveObject = getIndex((Long) key);
+        Node<Long, V> temporaryNode = table[indexOfRemoveObject];
+        V oldValue;
+        Node<Long, V> previousNode = null;
         while (temporaryNode != null) {
             if (Objects.equals(key, temporaryNode.key)) {
-                V oldValue = temporaryNode.value;
-                temporaryNode = temporaryNode.next;
+                oldValue = temporaryNode.value;
+                if (previousNode == null) {
+                    temporaryNode = temporaryNode.next;
+                    table[indexOfRemoveObject] = temporaryNode;
+                } else {
+                    previousNode.next = temporaryNode.next;
+                }
                 size--;
                 return oldValue;
             }
+            previousNode = temporaryNode;
             temporaryNode = temporaryNode.next;
         }
         return null;
@@ -200,7 +209,7 @@ public class MyHashMap<K extends Long, V> implements Map<Long, V> {
         threshold = (int) (table.length * DEFAULT_LOAD_FACTOR);
     }
 
-    private int index(Long key) {
+    private int getIndex(Long key) {
         return key == null ? 0 : Math.abs(key.hashCode()) % table.length;
     }
 }

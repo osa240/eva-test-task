@@ -13,7 +13,7 @@ public class MyMapTest {
     private Map<Long, String> myMapExample;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         myMapExample = new MyHashMap<>();
         myMapExample.put(1L, "First");
         myMapExample.put(2L, "Second");
@@ -21,7 +21,7 @@ public class MyMapTest {
     }
 
     @After
-    public void tearDown() throws Exception {
+    public void tearDown() {
         myMapExample = null;
     }
 
@@ -72,8 +72,9 @@ public class MyMapTest {
 
     @Test
     public void myHashMap_remove_Ok() {
-        assertTrue(myMapExample.remove(3L) != null);
-        assertTrue(myMapExample.size() == 2);
+        myMapExample.put(19L, "Nineteenth");
+        assertEquals("Third",myMapExample.remove(3L));
+        assertTrue(myMapExample.size() == 3);
     }
 
     @Test
